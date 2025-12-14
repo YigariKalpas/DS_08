@@ -19,7 +19,7 @@ public:
 	/// empty obj initiallize
 	/// </summary>
 	vector_m() : capacity(0),pointer(nullptr),end_pointer(0) {
-		reserve(100); //default memory assignment
+		reserve(100000); //default memory assignment
 	};
 	/// <summary>
 	/// template with a certain size of this instace
@@ -59,7 +59,7 @@ public:
 			end_pointer = 0;
 			capacity = new_size;
 			//不对size进行更改，此时没有对此块内容进行初始化，在原理上endpointer<=capacity可以保证
-#if debug_mode
+#if debug_mode && developer
 			std::cout << "reserve successfully\n";
 #endif
 			return;

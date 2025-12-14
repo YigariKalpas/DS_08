@@ -148,10 +148,10 @@ int Paritition1(vector_m<int>& A, int low, int high,long long &times) {
 /// <summary>
 /// can use the queue to update this function and defuse the use of calling_return
 /// </summary>
-/// <param name="A"></param>
-/// <param name="low"></param>
-/// <param name="high"></param>
-/// <param name="times"></param>
+/// <param name="A">@ the target array</param>
+/// <param name="low">@ the lower position of the array</param>
+/// <param name="high">@ the bigger position of the array</param>
+/// <param name="times">@ reference item to record the times used in swaping</param>
 void QuickSort(vector_m<int>& A, int low, int high, long long& times) //entrance of the fast sort
 {
 	if (low < high) {
@@ -185,18 +185,51 @@ heap_m<int> Heap_m(const vector_m<int>& Array, long long& times) {
 	return answer_heap;
 }
 
-void reset_base(vector_m<int>& Array, int front ,int back) {
-
-}
-
 vector_m<int> Reset_m(const vector_m<int>& Array, long long& times) {
 	vector_m<int> temp_arr(Array);
-	reset_base(temp_arr, 0, Array.Get_Size());
+	int area_size = 1; // start from size 1 and merge
+	//each time double the area_size
+	while (area_size <= Array.Get_Size() ) {
+		for (int i = 0; i < Array.Get_Size(); i += area_size * 2) {
+			vector_m<int> record_arr;// used to record the merged array temporarily
+			int front_pointer = i;
+			int back_pointer = min(i + area_size, (int)Array.Get_Size() - 1);
+			while (front_pointer < i + area_size &&
+				back_pointer < min(min(i + area_size, (int)Array.Get_Size() - 1) + area_size
+					, (int)Array.Get_Size())) {
+				if (temp_arr[front_pointer] > temp_arr[back_pointer]) {
+					record_arr.push_back(temp_arr[front_pointer]);
+					front_pointer++;
+				}
+				else {
+					record_arr.push_back(temp_arr[back_pointer]);
+					back_pointer++;
+				}
+			}
+			//copy the rest elements
+			while (front_pointer < i + area_size && front_pointer < Array.Get_Size()) {
+				record_arr.push_back(temp_arr[front_pointer]);
+				front_pointer++;
+			}
+			//copy the rest elements
+			while (back_pointer < min(min(i + area_size, (int)Array.Get_Size() - 1) + area_size
+				, (int)Array.Get_Size())) {
+				record_arr.push_back(temp_arr[back_pointer]);
+				back_pointer++;
+			}
+			//copy back to the temp_arr
+			for (int j = i; j < min(i + area_size * 2, (int)Array.Get_Size()); j++) {
+				temp_arr[j] = record_arr[j - i];
+				times++;
+			}
+		}
+		area_size *= 2;
+	}
 #if debug_mode 
 	temp_arr.vector_show();
 #endif
 	return temp_arr;
-}
+};
 
 vector_m<int> Basic_m(const vector_m<int>& Array, long long& times) {
 	vector_m<int> temp_arr(Array);
@@ -311,8 +344,8 @@ int main() {
 	int size = 0;
 	cout << "请输入目标数组大小" << endl;
 	cin >> size;
-	if (size > 100000) {
-		cout << "Oversize" << endl;
+	if (size > 100000 || size<=0) {
+		cout << "Oversize or negative" << endl;
 		return -2;
 	}
 	else {
